@@ -17,8 +17,6 @@ import {
   curry,
   append,
   tail,
-  gte,
-  lte,
 } from "ramda";
 
 import * as constants from "./constants";

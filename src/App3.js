@@ -16,25 +16,22 @@ import {
 const App3 = memo(() => {
   const [direction, setDirection] = React.useState(constants.RIGHT);
   const [snakeDots, setSnakeDots] = React.useState(constants.INITIAL_DOTS);
-  const directionRef = useRef(direction);
-
   const [food, setFood] = React.useState(getRandomFood());
   const [speed, setSpeed] = React.useState(constants.INITIAL_SPEED);
   const [route, setRoute] = React.useState(constants.MENU);
+  const routeRef = useRef(route);
 
   const onRouteChange = useCallback(() => {
     setRoute(constants.GAME);
+    routeRef.current = constants.GAME;
   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (route === constants.GAME) {
-        setSnakeDots((snakeDots) =>
-          updateSnakeDots(directionRef.current)(snakeDots)
-        );
+      if (routeRef.current === constants.GAME) {
+        setSnakeDots((snakeDots) => updateSnakeDots(direction)(snakeDots));
       }
     }, speed);
-
     return () => clearInterval(interval);
   }, [speed, route, direction]);
 
@@ -45,17 +42,15 @@ const App3 = memo(() => {
 
   useEffect(() => {
     if (route === constants.GAME && isGameOver(snakeDots)) {
+      console.log("game over");
       gameOver();
+      console.log("finish initialize");
     } else if (hasSnakeEats(food)(snakeDots)) {
       setFood(getRandomFood());
       setSpeed(updateSpeed(speed));
       setSnakeDots(getSnakeDotsWithVirtualTail(snakeDots));
     }
   }, [snakeDots, direction, route]);
-
-  useEffect(() => {
-    directionRef.current = direction;
-  }, [direction]);
 
   function gameOver() {
     alert(`Game Over. Your score is ${snakeDots.length - 2}`);
@@ -64,6 +59,7 @@ const App3 = memo(() => {
     setSpeed(constants.INITIAL_SPEED);
     setFood(getRandomFood());
     setRoute(constants.MENU);
+    routeRef.current = constants.MENU;
   }
 
   function keyDownHandler(e) {
